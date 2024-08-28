@@ -9,7 +9,10 @@ import {GovernorUpgradeable} from "openzeppelin-upgradeable-v5/governance/Govern
 import {CreateL2ArbSysProposal} from "script/helpers/CreateL2ArbSysProposal.sol";
 
 contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL2ArbSysProposal {
-    function run(address _timelockRolesUpgrader, address _proposer, uint256 _minDelay)
+    address PROPOSER_ADDRESS =
+        vm.envOr("PROPOSER_ADDRESS", 0x1B686eE8E31c5959D9F5BBd8122a58682788eeaD); //L2Beat
+
+    function run(address _timelockRolesUpgrader, uint256 _minDelay)
         public
         returns (
             address[] memory targets,
@@ -19,10 +22,10 @@ contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL
             uint256 _proposalId
         )
     {
-        return proposeUpgrade(_timelockRolesUpgrader, _proposer, _minDelay);
+        return proposeUpgrade(_timelockRolesUpgrader, _minDelay);
     }
 
-    function proposeUpgrade(address _timelockRolesUpgrader, address _proposer, uint256 _minDelay)
+    function proposeUpgrade(address _timelockRolesUpgrader, uint256 _minDelay)
         internal
         returns (
             address[] memory _targets,
@@ -81,7 +84,7 @@ contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL
   ";
         (_targets, _values, _calldatas) =
             createL2ArbSysProposal(_description, _timelockRolesUpgrader, _minDelay);
-        vm.startBroadcast(_proposer);
+        vm.startBroadcast(PROPOSER_ADDRESS);
         _proposalId = GovernorUpgradeable(payable(L2_CORE_GOVERNOR)).propose(
             _targets, _values, _calldatas, _description
         );
