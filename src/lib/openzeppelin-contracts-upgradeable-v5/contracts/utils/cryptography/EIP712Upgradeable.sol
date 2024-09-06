@@ -30,8 +30,9 @@ import {Initializable} from "../../proxy/utils/Initializable.sol";
  * separator from the immutable values, which is cheaper than accessing a cached version in cold storage.
  */
 abstract contract EIP712Upgradeable is Initializable, IERC5267 {
-    bytes32 private constant TYPE_HASH =
-        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+    bytes32 private constant TYPE_HASH = keccak256(
+        "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+    );
 
     /// @custom:storage-location erc7201:openzeppelin.storage.EIP712
     struct EIP712Storage {
@@ -39,13 +40,13 @@ abstract contract EIP712Upgradeable is Initializable, IERC5267 {
         bytes32 _hashedName;
         /// @custom:oz-renamed-from _HASHED_VERSION
         bytes32 _hashedVersion;
-
         string _name;
         string _version;
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.EIP712")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant EIP712StorageLocation = 0xa16a46d94261c7517cc8ff89f61c0ce93598e3c849801011dee649a6a557d100;
+    bytes32 private constant EIP712StorageLocation =
+        0xa16a46d94261c7517cc8ff89f61c0ce93598e3c849801011dee649a6a557d100;
 
     function _getEIP712Storage() private pure returns (EIP712Storage storage $) {
         assembly {
@@ -69,7 +70,10 @@ abstract contract EIP712Upgradeable is Initializable, IERC5267 {
         __EIP712_init_unchained(name, version);
     }
 
-    function __EIP712_init_unchained(string memory name, string memory version) internal onlyInitializing {
+    function __EIP712_init_unchained(string memory name, string memory version)
+        internal
+        onlyInitializing
+    {
         EIP712Storage storage $ = _getEIP712Storage();
         $._name = name;
         $._version = version;
@@ -87,7 +91,11 @@ abstract contract EIP712Upgradeable is Initializable, IERC5267 {
     }
 
     function _buildDomainSeparator() private view returns (bytes32) {
-        return keccak256(abi.encode(TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash(), block.chainid, address(this)));
+        return keccak256(
+            abi.encode(
+                TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash(), block.chainid, address(this)
+            )
+        );
     }
 
     /**

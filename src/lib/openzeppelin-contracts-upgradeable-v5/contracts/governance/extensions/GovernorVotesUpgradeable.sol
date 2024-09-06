@@ -4,7 +4,7 @@
 pragma solidity ^0.8.20;
 
 import {GovernorUpgradeable} from "../GovernorUpgradeable.sol";
-import {IVotes} from "@openzeppelin-v5/contracts/governance/utils/IVotes.sol";
+import {IVotes} from "openzeppelin-v5/governance/utils/IVotes.sol";
 import {IERC5805} from "@openzeppelin-v5/contracts/interfaces/IERC5805.sol";
 import {SafeCast} from "@openzeppelin-v5/contracts/utils/math/SafeCast.sol";
 import {Time} from "@openzeppelin-v5/contracts/utils/types/Time.sol";
@@ -21,7 +21,8 @@ abstract contract GovernorVotesUpgradeable is Initializable, GovernorUpgradeable
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.GovernorVotes")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant GovernorVotesStorageLocation = 0x3ba4977254e415696610a40ebf2258dbfa0ec6a2ff64e84bfe715ff16977cc00;
+    bytes32 private constant GovernorVotesStorageLocation =
+        0x3ba4977254e415696610a40ebf2258dbfa0ec6a2ff64e84bfe715ff16977cc00;
 
     function _getGovernorVotesStorage() private pure returns (GovernorVotesStorage storage $) {
         assembly {
@@ -73,11 +74,13 @@ abstract contract GovernorVotesUpgradeable is Initializable, GovernorUpgradeable
     /**
      * Read the voting weight from the token's built in snapshot mechanism (see {Governor-_getVotes}).
      */
-    function _getVotes(
-        address account,
-        uint256 timepoint,
-        bytes memory /*params*/
-    ) internal view virtual override returns (uint256) {
+    function _getVotes(address account, uint256 timepoint, bytes memory /*params*/ )
+        internal
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return token().getPastVotes(account, timepoint);
     }
 }

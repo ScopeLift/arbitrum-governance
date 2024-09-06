@@ -30,7 +30,13 @@ import {Initializable} from "../../proxy/utils/Initializable.sol";
  * {ERC721-balanceOf}), and can use {_transferVotingUnits} to track a change in the distribution of those units (in the
  * previous example, it would be included in {ERC721-_update}).
  */
-abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712Upgradeable, NoncesUpgradeable, IERC5805 {
+abstract contract VotesUpgradeable is
+    Initializable,
+    ContextUpgradeable,
+    EIP712Upgradeable,
+    NoncesUpgradeable,
+    IERC5805
+{
     using Checkpoints for Checkpoints.Trace208;
 
     bytes32 private constant DELEGATION_TYPEHASH =
@@ -39,14 +45,13 @@ abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712U
     /// @custom:storage-location erc7201:openzeppelin.storage.Votes
     struct VotesStorage {
         mapping(address account => address) _delegatee;
-
         mapping(address delegatee => Checkpoints.Trace208) _delegateCheckpoints;
-
         Checkpoints.Trace208 _totalCheckpoints;
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Votes")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant VotesStorageLocation = 0xe8b26c30fad74198956032a3533d903385d56dd795af560196f9c78d4af40d00;
+    bytes32 private constant VotesStorageLocation =
+        0xe8b26c30fad74198956032a3533d903385d56dd795af560196f9c78d4af40d00;
 
     function _getVotesStorage() private pure returns (VotesStorage storage $) {
         assembly {
@@ -64,15 +69,14 @@ abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712U
      */
     error ERC5805FutureLookup(uint256 timepoint, uint48 clock);
 
-    function __Votes_init() internal onlyInitializing {
-    }
+    function __Votes_init() internal onlyInitializing {}
 
-    function __Votes_init_unchained() internal onlyInitializing {
-    }
+    function __Votes_init_unchained() internal onlyInitializing {}
     /**
      * @dev Clock used for flagging checkpoints. Can be overridden to implement timestamp based
      * checkpoints (and voting), in which case {CLOCK_MODE} should be overridden as well to match.
      */
+
     function clock() public view virtual returns (uint48) {
         return Time.blockNumber();
     }
@@ -105,7 +109,12 @@ abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712U
      *
      * - `timepoint` must be in the past. If operating using block numbers, the block must be already mined.
      */
-    function getPastVotes(address account, uint256 timepoint) public view virtual returns (uint256) {
+    function getPastVotes(address account, uint256 timepoint)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
         VotesStorage storage $ = _getVotesStorage();
         uint48 currentTimepoint = clock();
         if (timepoint >= currentTimepoint) {
@@ -219,19 +228,13 @@ abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712U
         VotesStorage storage $ = _getVotesStorage();
         if (from != to && amount > 0) {
             if (from != address(0)) {
-                (uint256 oldValue, uint256 newValue) = _push(
-                    $._delegateCheckpoints[from],
-                    _subtract,
-                    SafeCast.toUint208(amount)
-                );
+                (uint256 oldValue, uint256 newValue) =
+                    _push($._delegateCheckpoints[from], _subtract, SafeCast.toUint208(amount));
                 emit DelegateVotesChanged(from, oldValue, newValue);
             }
             if (to != address(0)) {
-                (uint256 oldValue, uint256 newValue) = _push(
-                    $._delegateCheckpoints[to],
-                    _add,
-                    SafeCast.toUint208(amount)
-                );
+                (uint256 oldValue, uint256 newValue) =
+                    _push($._delegateCheckpoints[to], _add, SafeCast.toUint208(amount));
                 emit DelegateVotesChanged(to, oldValue, newValue);
             }
         }
@@ -248,10 +251,12 @@ abstract contract VotesUpgradeable is Initializable, ContextUpgradeable, EIP712U
     /**
      * @dev Get the `pos`-th checkpoint for `account`.
      */
-    function _checkpoints(
-        address account,
-        uint32 pos
-    ) internal view virtual returns (Checkpoints.Checkpoint208 memory) {
+    function _checkpoints(address account, uint32 pos)
+        internal
+        view
+        virtual
+        returns (Checkpoints.Checkpoint208 memory)
+    {
         VotesStorage storage $ = _getVotesStorage();
         return $._delegateCheckpoints[account].at(pos);
     }

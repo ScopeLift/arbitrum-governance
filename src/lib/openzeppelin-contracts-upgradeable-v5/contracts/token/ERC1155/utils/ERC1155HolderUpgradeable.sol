@@ -15,25 +15,30 @@ import {Initializable} from "../../../proxy/utils/Initializable.sol";
  * stuck.
  */
 abstract contract ERC1155HolderUpgradeable is Initializable, ERC165Upgradeable, IERC1155Receiver {
-    function __ERC1155Holder_init() internal onlyInitializing {
-    }
+    function __ERC1155Holder_init() internal onlyInitializing {}
 
-    function __ERC1155Holder_init_unchained() internal onlyInitializing {
-    }
+    function __ERC1155Holder_init_unchained() internal onlyInitializing {}
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable, IERC165) returns (bool) {
-        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC165Upgradeable, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IERC1155Receiver).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual override returns (bytes4) {
+    function onERC1155Received(address, address, uint256, uint256, bytes memory)
+        public
+        virtual
+        override
+        returns (bytes4)
+    {
         return this.onERC1155Received.selector;
     }
 

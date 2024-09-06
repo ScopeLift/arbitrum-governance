@@ -27,15 +27,23 @@ import {Initializable} from "../proxy/utils/Initializable.sol";
  * - A voting module must implement {_getVotes}
  * - Additionally, {votingPeriod} must also be implemented
  */
-abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC165Upgradeable, EIP712Upgradeable, NoncesUpgradeable, IGovernor, IERC721Receiver, IERC1155Receiver {
+abstract contract GovernorUpgradeable is
+    Initializable,
+    ContextUpgradeable,
+    ERC165Upgradeable,
+    EIP712Upgradeable,
+    NoncesUpgradeable,
+    IGovernor,
+    IERC721Receiver,
+    IERC1155Receiver
+{
     using DoubleEndedQueue for DoubleEndedQueue.Bytes32Deque;
 
     bytes32 public constant BALLOT_TYPEHASH =
         keccak256("Ballot(uint256 proposalId,uint8 support,address voter,uint256 nonce)");
-    bytes32 public constant EXTENDED_BALLOT_TYPEHASH =
-        keccak256(
-            "ExtendedBallot(uint256 proposalId,uint8 support,address voter,uint256 nonce,string reason,bytes params)"
-        );
+    bytes32 public constant EXTENDED_BALLOT_TYPEHASH = keccak256(
+        "ExtendedBallot(uint256 proposalId,uint8 support,address voter,uint256 nonce,string reason,bytes params)"
+    );
 
     struct ProposalCore {
         address proposer;
@@ -46,13 +54,13 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
         uint48 etaSeconds;
     }
 
-    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP = bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
+    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP =
+        bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
     /// @custom:storage-location erc7201:openzeppelin.storage.Governor
+
     struct GovernorStorage {
         string _name;
-
         mapping(uint256 proposalId => ProposalCore) _proposals;
-
         // This queue keeps track of the governor operating on itself. Calls to functions protected by the {onlyGovernance}
         // modifier needs to be whitelisted in this queue. Whitelisting is set in {execute}, consumed by the
         // {onlyGovernance} modifier and eventually reset after {_executeOperations} completes. This ensures that the
@@ -61,7 +69,8 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Governor")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant GovernorStorageLocation = 0x7c712897014dbe49c045ef1299aa2d5f9e67e48eea4403efa21f1e0f3ac0cb00;
+    bytes32 private constant GovernorStorageLocation =
+        0x7c712897014dbe49c045ef1299aa2d5f9e67e48eea4403efa21f1e0f3ac0cb00;
 
     function _getGovernorStorage() private pure returns (GovernorStorage storage $) {
         assembly {
@@ -109,11 +118,15 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC165Upgradeable) returns (bool) {
-        return
-            interfaceId == type(IGovernor).interfaceId ||
-            interfaceId == type(IERC1155Receiver).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC165Upgradeable)
+        returns (bool)
+    {
+        return interfaceId == type(IGovernor).interfaceId
+            || interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
@@ -272,7 +285,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     /**
      * @dev Get the voting weight of `account` at a specific `timepoint`, for a vote as described by `params`.
      */
-    function _getVotes(address account, uint256 timepoint, bytes memory params) internal view virtual returns (uint256);
+    function _getVotes(address account, uint256 timepoint, bytes memory params)
+        internal
+        view
+        virtual
+        returns (uint256);
 
     /**
      * @dev Register a vote for `proposalId` by `account` with a given `support`, voting `weight` and voting `params`.
@@ -340,7 +357,10 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
         GovernorStorage storage $ = _getGovernorStorage();
         proposalId = hashProposal(targets, values, calldatas, keccak256(bytes(description)));
 
-        if (targets.length != values.length || targets.length != calldatas.length || targets.length == 0) {
+        if (
+            targets.length != values.length || targets.length != calldatas.length
+                || targets.length == 0
+        ) {
             revert GovernorInvalidProposalLength(targets.length, calldatas.length, values.length);
         }
         if ($._proposals[proposalId].voteStart != 0) {
@@ -384,7 +404,8 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
 
         _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Succeeded));
 
-        uint48 etaSeconds = _queueOperations(proposalId, targets, values, calldatas, descriptionHash);
+        uint48 etaSeconds =
+            _queueOperations(proposalId, targets, values, calldatas, descriptionHash);
 
         if (etaSeconds != 0) {
             $._proposals[proposalId].etaSeconds = etaSeconds;
@@ -410,10 +431,10 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * `ProposalQueued` event. Queuing a proposal should be done using {queue}.
      */
     function _queueOperations(
-        uint256 /*proposalId*/,
-        address[] memory /*targets*/,
-        uint256[] memory /*values*/,
-        bytes[] memory /*calldatas*/,
+        uint256, /*proposalId*/
+        address[] memory, /*targets*/
+        uint256[] memory, /*values*/
+        bytes[] memory, /*calldatas*/
         bytes32 /*descriptionHash*/
     ) internal virtual returns (uint48) {
         return 0;
@@ -468,14 +489,15 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * true or emit the `ProposalExecuted` event. Executing a proposal should be done using {execute} or {_execute}.
      */
     function _executeOperations(
-        uint256 /* proposalId */,
+        uint256, /* proposalId */
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 /*descriptionHash*/
     ) internal virtual {
         for (uint256 i = 0; i < targets.length; ++i) {
-            (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
+            (bool success, bytes memory returndata) =
+                targets[i].call{value: values[i]}(calldatas[i]);
             Address.verifyCallResult(success, returndata);
         }
     }
@@ -520,10 +542,8 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
 
         _validateStateBitmap(
             proposalId,
-            ALL_PROPOSAL_STATES_BITMAP ^
-                _encodeStateBitmap(ProposalState.Canceled) ^
-                _encodeStateBitmap(ProposalState.Expired) ^
-                _encodeStateBitmap(ProposalState.Executed)
+            ALL_PROPOSAL_STATES_BITMAP ^ _encodeStateBitmap(ProposalState.Canceled)
+                ^ _encodeStateBitmap(ProposalState.Expired) ^ _encodeStateBitmap(ProposalState.Executed)
         );
 
         $._proposals[proposalId].canceled = true;
@@ -542,11 +562,12 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     /**
      * @dev See {IGovernor-getVotesWithParams}.
      */
-    function getVotesWithParams(
-        address account,
-        uint256 timepoint,
-        bytes memory params
-    ) public view virtual returns (uint256) {
+    function getVotesWithParams(address account, uint256 timepoint, bytes memory params)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
         return _getVotes(account, timepoint, params);
     }
 
@@ -561,11 +582,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     /**
      * @dev See {IGovernor-castVoteWithReason}.
      */
-    function castVoteWithReason(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason
-    ) public virtual returns (uint256) {
+    function castVoteWithReason(uint256 proposalId, uint8 support, string calldata reason)
+        public
+        virtual
+        returns (uint256)
+    {
         address voter = _msgSender();
         return _castVote(proposalId, voter, support, reason);
     }
@@ -586,15 +607,16 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
     /**
      * @dev See {IGovernor-castVoteBySig}.
      */
-    function castVoteBySig(
-        uint256 proposalId,
-        uint8 support,
-        address voter,
-        bytes memory signature
-    ) public virtual returns (uint256) {
+    function castVoteBySig(uint256 proposalId, uint8 support, address voter, bytes memory signature)
+        public
+        virtual
+        returns (uint256)
+    {
         bool valid = SignatureChecker.isValidSignatureNow(
             voter,
-            _hashTypedDataV4(keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support, voter, _useNonce(voter)))),
+            _hashTypedDataV4(
+                keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support, voter, _useNonce(voter)))
+            ),
             signature
         );
 
@@ -647,12 +669,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      *
      * Emits a {IGovernor-VoteCast} event.
      */
-    function _castVote(
-        uint256 proposalId,
-        address account,
-        uint8 support,
-        string memory reason
-    ) internal virtual returns (uint256) {
+    function _castVote(uint256 proposalId, address account, uint8 support, string memory reason)
+        internal
+        virtual
+        returns (uint256)
+    {
         return _castVote(proposalId, account, support, reason, _defaultParams());
     }
 
@@ -689,7 +710,12 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * in a governance proposal to recover tokens or Ether that was sent to the governor contract by mistake.
      * Note that if the executor is simply the governor itself, use of `relay` is redundant.
      */
-    function relay(address target, uint256 value, bytes calldata data) external payable virtual onlyGovernance {
+    function relay(address target, uint256 value, bytes calldata data)
+        external
+        payable
+        virtual
+        onlyGovernance
+    {
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         Address.verifyCallResult(success, returndata);
     }
@@ -706,7 +732,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * @dev See {IERC721Receiver-onERC721Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes memory)
+        public
+        virtual
+        returns (bytes4)
+    {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -717,7 +747,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * @dev See {IERC1155Receiver-onERC1155Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC1155Received(address, address, uint256, uint256, bytes memory)
+        public
+        virtual
+        returns (bytes4)
+    {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -763,7 +797,11 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      *
      * If requirements are not met, reverts with a {GovernorUnexpectedProposalState} error.
      */
-    function _validateStateBitmap(uint256 proposalId, bytes32 allowedStates) private view returns (ProposalState) {
+    function _validateStateBitmap(uint256 proposalId, bytes32 allowedStates)
+        private
+        view
+        returns (ProposalState)
+    {
         ProposalState currentState = state(proposalId);
         if (_encodeStateBitmap(currentState) & allowedStates == bytes32(0)) {
             revert GovernorUnexpectedProposalState(proposalId, currentState, allowedStates);
@@ -788,10 +826,12 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
      * - If it ends with some other similar suffix, e.g. `#other=abc`.
      * - If it does not end with any such suffix.
      */
-    function _isValidDescriptionForProposer(
-        address proposer,
-        string memory description
-    ) internal view virtual returns (bool) {
+    function _isValidDescriptionForProposer(address proposer, string memory description)
+        internal
+        view
+        virtual
+        returns (bool)
+    {
         uint256 len = bytes(description).length;
 
         // Length is too short to contain a valid proposer suffix

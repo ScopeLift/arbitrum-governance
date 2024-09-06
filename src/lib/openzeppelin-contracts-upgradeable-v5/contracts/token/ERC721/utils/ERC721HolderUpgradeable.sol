@@ -14,17 +14,20 @@ import {Initializable} from "../../../proxy/utils/Initializable.sol";
  * {IERC721-setApprovalForAll}.
  */
 abstract contract ERC721HolderUpgradeable is Initializable, IERC721Receiver {
-    function __ERC721Holder_init() internal onlyInitializing {
-    }
+    function __ERC721Holder_init() internal onlyInitializing {}
 
-    function __ERC721Holder_init_unchained() internal onlyInitializing {
-    }
+    function __ERC721Holder_init_unchained() internal onlyInitializing {}
     /**
      * @dev See {IERC721Receiver-onERC721Received}.
      *
      * Always returns `IERC721Receiver.onERC721Received.selector`.
      */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+
+    function onERC721Received(address, address, uint256, bytes memory)
+        public
+        virtual
+        returns (bytes4)
+    {
         return this.onERC721Received.selector;
     }
 }

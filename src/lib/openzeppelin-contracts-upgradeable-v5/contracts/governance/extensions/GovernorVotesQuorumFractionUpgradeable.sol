@@ -12,7 +12,10 @@ import {Initializable} from "../../proxy/utils/Initializable.sol";
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token and a quorum expressed as a
  * fraction of the total supply.
  */
-abstract contract GovernorVotesQuorumFractionUpgradeable is Initializable, GovernorVotesUpgradeable {
+abstract contract GovernorVotesQuorumFractionUpgradeable is
+    Initializable,
+    GovernorVotesUpgradeable
+{
     using Checkpoints for Checkpoints.Trace208;
 
     /// @custom:storage-location erc7201:openzeppelin.storage.GovernorVotesQuorumFraction
@@ -21,9 +24,14 @@ abstract contract GovernorVotesQuorumFractionUpgradeable is Initializable, Gover
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.GovernorVotesQuorumFraction")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant GovernorVotesQuorumFractionStorageLocation = 0xe770710421fd2cad75ad828c61aa98f2d77d423a440b67872d0f65554148e000;
+    bytes32 private constant GovernorVotesQuorumFractionStorageLocation =
+        0xe770710421fd2cad75ad828c61aa98f2d77d423a440b67872d0f65554148e000;
 
-    function _getGovernorVotesQuorumFractionStorage() private pure returns (GovernorVotesQuorumFractionStorage storage $) {
+    function _getGovernorVotesQuorumFractionStorage()
+        private
+        pure
+        returns (GovernorVotesQuorumFractionStorage storage $)
+    {
         assembly {
             $.slot := GovernorVotesQuorumFractionStorageLocation
         }
@@ -43,11 +51,17 @@ abstract contract GovernorVotesQuorumFractionUpgradeable is Initializable, Gover
      * specified as a percent: a numerator of 10 corresponds to quorum being 10% of total supply. The denominator can be
      * customized by overriding {quorumDenominator}.
      */
-    function __GovernorVotesQuorumFraction_init(uint256 quorumNumeratorValue) internal onlyInitializing {
+    function __GovernorVotesQuorumFraction_init(uint256 quorumNumeratorValue)
+        internal
+        onlyInitializing
+    {
         __GovernorVotesQuorumFraction_init_unchained(quorumNumeratorValue);
     }
 
-    function __GovernorVotesQuorumFraction_init_unchained(uint256 quorumNumeratorValue) internal onlyInitializing {
+    function __GovernorVotesQuorumFraction_init_unchained(uint256 quorumNumeratorValue)
+        internal
+        onlyInitializing
+    {
         _updateQuorumNumerator(quorumNumeratorValue);
     }
 
@@ -67,7 +81,8 @@ abstract contract GovernorVotesQuorumFractionUpgradeable is Initializable, Gover
         uint256 length = $._quorumNumeratorHistory._checkpoints.length;
 
         // Optimistic search, check the latest checkpoint
-        Checkpoints.Checkpoint208 storage latest = $._quorumNumeratorHistory._checkpoints[length - 1];
+        Checkpoints.Checkpoint208 storage latest =
+            $._quorumNumeratorHistory._checkpoints[length - 1];
         uint48 latestKey = latest._key;
         uint208 latestValue = latest._value;
         if (latestKey <= timepoint) {
@@ -89,7 +104,8 @@ abstract contract GovernorVotesQuorumFractionUpgradeable is Initializable, Gover
      * @dev Returns the quorum for a timepoint, in terms of number of votes: `supply * numerator / denominator`.
      */
     function quorum(uint256 timepoint) public view virtual override returns (uint256) {
-        return (token().getPastTotalSupply(timepoint) * quorumNumerator(timepoint)) / quorumDenominator();
+        return (token().getPastTotalSupply(timepoint) * quorumNumerator(timepoint))
+            / quorumDenominator();
     }
 
     /**

@@ -27,21 +27,25 @@ import {Initializable} from "../../proxy/utils/Initializable.sol";
  * conventional and does not conflict with the expectations of ERC-20
  * applications.
  */
-abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20, IERC20Metadata, IERC20Errors {
+abstract contract ERC20Upgradeable is
+    Initializable,
+    ContextUpgradeable,
+    IERC20,
+    IERC20Metadata,
+    IERC20Errors
+{
     /// @custom:storage-location erc7201:openzeppelin.storage.ERC20
     struct ERC20Storage {
         mapping(address account => uint256) _balances;
-
         mapping(address account => mapping(address spender => uint256)) _allowances;
-
         uint256 _totalSupply;
-
         string _name;
         string _symbol;
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ERC20")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant ERC20StorageLocation = 0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00;
+    bytes32 private constant ERC20StorageLocation =
+        0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00;
 
     function _getERC20Storage() private pure returns (ERC20Storage storage $) {
         assembly {
@@ -59,7 +63,10 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
         __ERC20_init_unchained(name_, symbol_);
     }
 
-    function __ERC20_init_unchained(string memory name_, string memory symbol_) internal onlyInitializing {
+    function __ERC20_init_unchained(string memory name_, string memory symbol_)
+        internal
+        onlyInitializing
+    {
         ERC20Storage storage $ = _getERC20Storage();
         $._name = name_;
         $._symbol = symbol_;
@@ -301,7 +308,10 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      *
      * Requirements are the same as {_approve}.
      */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
+    function _approve(address owner, address spender, uint256 value, bool emitEvent)
+        internal
+        virtual
+    {
         ERC20Storage storage $ = _getERC20Storage();
         if (owner == address(0)) {
             revert ERC20InvalidApprover(address(0));

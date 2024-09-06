@@ -22,7 +22,12 @@ import {Initializable} from "../proxy/utils/Initializable.sol";
  * to position this {TimelockController} as the owner of a smart contract, with
  * a multisig or a DAO as the sole proposer.
  */
-contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeable, ERC721HolderUpgradeable, ERC1155HolderUpgradeable {
+contract TimelockControllerUpgradeable is
+    Initializable,
+    AccessControlUpgradeable,
+    ERC721HolderUpgradeable,
+    ERC1155HolderUpgradeable
+{
     bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
     bytes32 public constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
@@ -35,9 +40,14 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.TimelockController")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant TimelockControllerStorageLocation = 0x9a37c2aa9d186a0969ff8a8267bf4e07e864c2f2768f5040949e28a624fb3600;
+    bytes32 private constant TimelockControllerStorageLocation =
+        0x9a37c2aa9d186a0969ff8a8267bf4e07e864c2f2768f5040949e28a624fb3600;
 
-    function _getTimelockControllerStorage() private pure returns (TimelockControllerStorage storage $) {
+    function _getTimelockControllerStorage()
+        private
+        pure
+        returns (TimelockControllerStorage storage $)
+    {
         assembly {
             $.slot := TimelockControllerStorageLocation
         }
@@ -95,7 +105,9 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
     /**
      * @dev Emitted when a call is performed as part of operation `id`.
      */
-    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);
+    event CallExecuted(
+        bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data
+    );
 
     /**
      * @dev Emitted when new proposal is scheduled with non-zero salt.
@@ -112,7 +124,12 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
      */
     event MinDelayChange(uint256 oldDuration, uint256 newDuration);
 
-    function initialize(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) public virtual initializer {
+    function initialize(
+        uint256 minDelay,
+        address[] memory proposers,
+        address[] memory executors,
+        address admin
+    ) public virtual initializer {
         __TimelockController_init(minDelay, proposers, executors, admin);
     }
     /**
@@ -128,11 +145,22 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
      * administration through timelocked proposals. Previous versions of this contract would assign
      * this admin to the deployer automatically and should be renounced as well.
      */
-    function __TimelockController_init(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) internal onlyInitializing {
+
+    function __TimelockController_init(
+        uint256 minDelay,
+        address[] memory proposers,
+        address[] memory executors,
+        address admin
+    ) internal onlyInitializing {
         __TimelockController_init_unchained(minDelay, proposers, executors, admin);
     }
 
-    function __TimelockController_init_unchained(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) internal onlyInitializing {
+    function __TimelockController_init_unchained(
+        uint256 minDelay,
+        address[] memory proposers,
+        address[] memory executors,
+        address admin
+    ) internal onlyInitializing {
         TimelockControllerStorage storage $ = _getTimelockControllerStorage();
         // self administration
         _grantRole(DEFAULT_ADMIN_ROLE, address(this));
@@ -178,9 +206,13 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(AccessControlUpgradeable, ERC1155HolderUpgradeable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlUpgradeable, ERC1155HolderUpgradeable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
@@ -360,7 +392,8 @@ contract TimelockControllerUpgradeable is Initializable, AccessControlUpgradeabl
         if (!isOperationPending(id)) {
             revert TimelockUnexpectedOperationState(
                 id,
-                _encodeStateBitmap(OperationState.Waiting) | _encodeStateBitmap(OperationState.Ready)
+                _encodeStateBitmap(OperationState.Waiting)
+                    | _encodeStateBitmap(OperationState.Ready)
             );
         }
         delete $._timestamps[id];

@@ -20,14 +20,18 @@ abstract contract GovernorPreventLateQuorumUpgradeable is Initializable, Governo
     /// @custom:storage-location erc7201:openzeppelin.storage.GovernorPreventLateQuorum
     struct GovernorPreventLateQuorumStorage {
         uint48 _voteExtension;
-
         mapping(uint256 proposalId => uint48) _extendedDeadlines;
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.GovernorPreventLateQuorum")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant GovernorPreventLateQuorumStorageLocation = 0x042f525fd47e44d02e065dd7bb464f47b4f926fbd05b5e087891ebd756adf100;
+    bytes32 private constant GovernorPreventLateQuorumStorageLocation =
+        0x042f525fd47e44d02e065dd7bb464f47b4f926fbd05b5e087891ebd756adf100;
 
-    function _getGovernorPreventLateQuorumStorage() private pure returns (GovernorPreventLateQuorumStorage storage $) {
+    function _getGovernorPreventLateQuorumStorage()
+        private
+        pure
+        returns (GovernorPreventLateQuorumStorage storage $)
+    {
         assembly {
             $.slot := GovernorPreventLateQuorumStorageLocation
         }
@@ -44,11 +48,17 @@ abstract contract GovernorPreventLateQuorumUpgradeable is Initializable, Governo
      * governor clock mode) that is required to pass since the moment a proposal reaches quorum until its voting period
      * ends. If necessary the voting period will be extended beyond the one set during proposal creation.
      */
-    function __GovernorPreventLateQuorum_init(uint48 initialVoteExtension) internal onlyInitializing {
+    function __GovernorPreventLateQuorum_init(uint48 initialVoteExtension)
+        internal
+        onlyInitializing
+    {
         __GovernorPreventLateQuorum_init_unchained(initialVoteExtension);
     }
 
-    function __GovernorPreventLateQuorum_init_unchained(uint48 initialVoteExtension) internal onlyInitializing {
+    function __GovernorPreventLateQuorum_init_unchained(uint48 initialVoteExtension)
+        internal
+        onlyInitializing
+    {
         _setLateQuorumVoteExtension(initialVoteExtension);
     }
 

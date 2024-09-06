@@ -50,9 +50,14 @@ abstract contract GovernorCountingFractionalUpgradeable is Initializable, Govern
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.GovernorCountingFractional")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant GovernorCountingFractionalStorageLocation = 0xd073797d8f9d07d835a3fc13195afeafd2f137da609f97a44f7a3aa434170800;
+    bytes32 private constant GovernorCountingFractionalStorageLocation =
+        0xd073797d8f9d07d835a3fc13195afeafd2f137da609f97a44f7a3aa434170800;
 
-    function _getGovernorCountingFractionalStorage() private pure returns (GovernorCountingFractionalStorage storage $) {
+    function _getGovernorCountingFractionalStorage()
+        private
+        pure
+        returns (GovernorCountingFractionalStorage storage $)
+    {
         assembly {
             $.slot := GovernorCountingFractionalStorageLocation
         }
@@ -63,15 +68,14 @@ abstract contract GovernorCountingFractionalUpgradeable is Initializable, Govern
      */
     error GovernorExceedRemainingWeight(address voter, uint256 usedVotes, uint256 remainingWeight);
 
-    function __GovernorCountingFractional_init() internal onlyInitializing {
-    }
+    function __GovernorCountingFractional_init() internal onlyInitializing {}
 
-    function __GovernorCountingFractional_init_unchained() internal onlyInitializing {
-    }
+    function __GovernorCountingFractional_init_unchained() internal onlyInitializing {}
     /**
      * @dev See {IGovernor-COUNTING_MODE}.
      */
     // solhint-disable-next-line func-name-mixedcase
+
     function COUNTING_MODE() public pure virtual override returns (string memory) {
         return "support=bravo,fractional&quorum=for,abstain&params=fractional";
     }
@@ -79,7 +83,13 @@ abstract contract GovernorCountingFractionalUpgradeable is Initializable, Govern
     /**
      * @dev See {IGovernor-hasVoted}.
      */
-    function hasVoted(uint256 proposalId, address account) public view virtual override returns (bool) {
+    function hasVoted(uint256 proposalId, address account)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
         return usedVotes(proposalId, account) > 0;
     }
 
@@ -95,9 +105,12 @@ abstract contract GovernorCountingFractionalUpgradeable is Initializable, Govern
     /**
      * @dev Get current distribution of votes for a given proposal.
      */
-    function proposalVotes(
-        uint256 proposalId
-    ) public view virtual returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) {
+    function proposalVotes(uint256 proposalId)
+        public
+        view
+        virtual
+        returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)
+    {
         GovernorCountingFractionalStorage storage $ = _getGovernorCountingFractionalStorage();
         ProposalVote storage proposalVote = $._proposalVotes[proposalId];
         return (proposalVote.againstVotes, proposalVote.forVotes, proposalVote.abstainVotes);
@@ -109,7 +122,8 @@ abstract contract GovernorCountingFractionalUpgradeable is Initializable, Govern
     function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
         GovernorCountingFractionalStorage storage $ = _getGovernorCountingFractionalStorage();
         ProposalVote storage proposalVote = $._proposalVotes[proposalId];
-        return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
+        return quorum(proposalSnapshot(proposalId))
+            <= proposalVote.forVotes + proposalVote.abstainVotes;
     }
 
     /**

@@ -61,7 +61,9 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * See {Governor-_encodeStateBitmap}.
      */
-    error GovernorUnexpectedProposalState(uint256 proposalId, ProposalState current, bytes32 expectedStates);
+    error GovernorUnexpectedProposalState(
+        uint256 proposalId, ProposalState current, bytes32 expectedStates
+    );
 
     /**
      * @dev The voting period set is not a valid period.
@@ -139,7 +141,9 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
      */
-    event VoteCast(address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason);
+    event VoteCast(
+        address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason
+    );
 
     /**
      * @dev Emitted when a vote is cast with params.
@@ -300,11 +304,10 @@ interface IGovernor is IERC165, IERC6372 {
      * @notice module:reputation
      * @dev Voting power of an `account` at a specific `timepoint` given additional encoded parameters.
      */
-    function getVotesWithParams(
-        address account,
-        uint256 timepoint,
-        bytes memory params
-    ) external view returns (uint256);
+    function getVotesWithParams(address account, uint256 timepoint, bytes memory params)
+        external
+        view
+        returns (uint256);
 
     /**
      * @notice module:voting
@@ -380,11 +383,9 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Emits a {VoteCast} event.
      */
-    function castVoteWithReason(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason
-    ) external returns (uint256 balance);
+    function castVoteWithReason(uint256 proposalId, uint8 support, string calldata reason)
+        external
+        returns (uint256 balance);
 
     /**
      * @dev Cast a vote with a reason and additional encoded parameters
@@ -403,12 +404,9 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Emits a {VoteCast} event.
      */
-    function castVoteBySig(
-        uint256 proposalId,
-        uint8 support,
-        address voter,
-        bytes memory signature
-    ) external returns (uint256 balance);
+    function castVoteBySig(uint256 proposalId, uint8 support, address voter, bytes memory signature)
+        external
+        returns (uint256 balance);
 
     /**
      * @dev Cast a vote with a reason and additional encoded parameters using the voter's signature,
