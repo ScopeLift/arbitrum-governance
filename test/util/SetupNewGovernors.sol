@@ -35,7 +35,10 @@ abstract contract SetupNewGovernors is SharedGovernorConstants, Test {
 
     function setUp() public virtual {
         vm.createSelectFork(
-            vm.envOr("ARBITRUM_ONE_RPC_URL", string("https://arbitrum.llamarpc.com")), FORK_BLOCK
+            vm.envOr(
+                "ARBITRUM_ONE_RPC_URL", string("Please set ARBITRUM_ONE_RPC_URL in your .env file")
+            ),
+            FORK_BLOCK
         );
 
         // Deploy Governor implementation contract
