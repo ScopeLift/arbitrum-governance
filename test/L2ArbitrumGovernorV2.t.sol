@@ -1012,6 +1012,12 @@ abstract contract QuorumDenominator is L2ArbitrumGovernorV2Test {
     }
 }
 
+abstract contract CountingMode is L2ArbitrumGovernorV2Test {
+    function test_ReturnsCorrectCountingMode() public view {
+        assertEq(governor.COUNTING_MODE(), "support=bravo&quorum=for,abstain");
+    }
+}
+
 contract MockOneOffUpgrader {
     function perform() public pure {}
 }
@@ -1104,6 +1110,12 @@ contract CoreGovernorQuorumDenominator is CoreGovernorBase, QuorumDenominator {
     }
 }
 
+contract CoreGovernorCountingMode is CoreGovernorBase, CountingMode {
+    function setUp() public override(L2ArbitrumGovernorV2Test, CoreGovernorBase) {
+        super.setUp();
+    }
+}
+
 contract TreasuryGovernorInitialize is TreasuryGovernorBase, Initialize {
     function setUp() public override(L2ArbitrumGovernorV2Test, TreasuryGovernorBase) {
         super.setUp();
@@ -1186,6 +1198,12 @@ contract TreasuryGovernorExcludeAddress is TreasuryGovernorBase, EXCLUDE_ADDRESS
 }
 
 contract TreasuryGovernorQuorumDenominator is TreasuryGovernorBase, QuorumDenominator {
+    function setUp() public override(L2ArbitrumGovernorV2Test, TreasuryGovernorBase) {
+        super.setUp();
+    }
+}
+
+contract TreasuryGovernorCountingMode is TreasuryGovernorBase, CountingMode {
     function setUp() public override(L2ArbitrumGovernorV2Test, TreasuryGovernorBase) {
         super.setUp();
     }
