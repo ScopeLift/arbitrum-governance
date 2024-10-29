@@ -37,7 +37,6 @@ abstract contract L2ArbitrumGovernorV2Test is SetupNewGovernors {
     L2ArbitrumGovernorV2 governor;
     GovernorUpgradeable _oldGovernor;
     TimelockControllerUpgradeable timelock;
-    address PROXY_ADMIN_CONTRACT = L2_PROXY_ADMIN;
     ERC20Mock mockToken;
     ERC20VotesUpgradeable arbitrumToken;
     EtherReceiverMock mockEthReceiver;
@@ -384,7 +383,7 @@ abstract contract Relay is L2ArbitrumGovernorV2Test {
     }
 
     function testFuzz_RevertIf_NotOwner(address _actor, uint256 _numerator) public {
-        vm.assume(_actor != L2_UPGRADE_EXECUTOR && _actor != PROXY_ADMIN_CONTRACT);
+        vm.assume(_actor != L2_UPGRADE_EXECUTOR && _actor != L2_PROXY_ADMIN_CONTRACT);
         _numerator = bound(_numerator, 1, governor.quorumDenominator());
         vm.expectRevert(abi.encodeWithSelector(OwnableUnauthorizedAccount.selector, _actor));
         vm.prank(_actor);
@@ -524,7 +523,7 @@ abstract contract Propose is L2ArbitrumGovernorV2Test {
     ) public {
         uint256 _actorVotes = arbitrumToken.getPastVotes(_actor, vm.getBlockNumber() - 1);
         vm.assume(_actorVotes < governor.proposalThreshold());
-        vm.assume(_actor != PROXY_ADMIN_CONTRACT);
+        vm.assume(_actor != L2_PROXY_ADMIN_CONTRACT);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -936,7 +935,7 @@ abstract contract Cancel is L2ArbitrumGovernorV2Test {
 
     function testFuzz_RevertIf_NotProposer(uint256 _actorSeed, address _actor) public {
         address _proposer = _getMajorDelegate(_actorSeed);
-        vm.assume(_actor != _proposer && _actor != PROXY_ADMIN_CONTRACT);
+        vm.assume(_actor != _proposer && _actor != L2_PROXY_ADMIN_CONTRACT);
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
         bytes[] memory calldatas = new bytes[](1);

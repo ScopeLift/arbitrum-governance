@@ -14,7 +14,8 @@ contract SharedGovernorConstants {
     address public constant L2_TREASURY_GOVERNOR = 0x789fC99093B09aD01C34DC7251D0C89ce743e5a4;
     address public constant L2_TREASURY_GOVERNOR_TIMELOCK =
         0xbFc1FECa8B09A5c5D3EFfE7429eBE24b9c09EF58;
-    address public constant L2_PROXY_ADMIN = 0xdb216562328215E010F819B5aBe947bad4ca961e;
+    address public constant L2_PROXY_ADMIN_OWNER = L2_UPGRADE_EXECUTOR;
+    address public constant L2_PROXY_ADMIN_CONTRACT = 0xD03570d41059D3B4113893d9E01790173558f574;
 
     address public constant L2_ARB_SYS = 0x0000000000000000000000000000000000000064;
     address public constant L2_ARB_TREASURY_FIXED_DELEGATE =

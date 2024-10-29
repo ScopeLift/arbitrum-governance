@@ -39,7 +39,7 @@ abstract contract BaseGovernorDeployer is BaseDeployer, SharedGovernorConstants 
             )
         );
         TransparentUpgradeableProxy _proxy =
-            new TransparentUpgradeableProxy(_implementation, L2_PROXY_ADMIN, _initData);
+            new TransparentUpgradeableProxy(_implementation, L2_PROXY_ADMIN_OWNER, _initData);
         _governor = L2ArbitrumGovernorV2(payable(address(_proxy)));
         vm.stopBroadcast();
     }
