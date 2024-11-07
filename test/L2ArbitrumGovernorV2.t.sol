@@ -644,6 +644,47 @@ abstract contract CastVote is L2ArbitrumGovernorV2Test {
 
         vm.assertEq(uint256(governor.state(_proposal.proposalId)), uint256(ProposalState.Defeated));
     }
+
+    function testFuzz_RevertIf_DelegateVotesTwice(
+        uint256 _proposalSeed,
+        uint256 _delegateSeed,
+        uint256 _voteSeed
+    ) public {
+        _skipToPostUpgrade();
+        Proposal memory _proposal = _proposeRealisticProposal(_proposalSeed);
+        vm.roll(vm.getBlockNumber() + governor.votingDelay() + 1);
+        assertEq(
+            uint256(governor.state(_proposal.proposalId)), uint256(IGovernor.ProposalState.Active)
+        );
+
+        address _delegate = _getMajorDelegate(_delegateSeed);
+        uint8 _vote = uint8(VoteType(_voteSeed % 3));
+        vm.startPrank(_delegate);
+        governor.castVote(_proposal.proposalId, _vote);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(IGovernor.GovernorAlreadyCastVote.selector, _delegate)
+        );
+        governor.castVote(_proposal.proposalId, _vote);
+        vm.stopPrank();
+    }
+
+    function testFuzz_RevertIf_ProposalDoesNotExist(
+        uint256 _proposalId,
+        uint256 _delegateSeed,
+        uint256 _voteSeed
+    ) public {
+        _skipToPostUpgrade();
+
+        address _delegate = _getMajorDelegate(_delegateSeed);
+        uint8 _vote = uint8(VoteType(_voteSeed % 3));
+
+        vm.prank(_delegate);
+        vm.expectRevert(
+            abi.encodeWithSelector(IGovernor.GovernorNonexistentProposal.selector, _proposalId)
+        );
+        governor.castVote(_proposalId, _vote);
+    }
 }
 
 abstract contract CastVoteWithReasonAndParams is L2ArbitrumGovernorV2Test {
