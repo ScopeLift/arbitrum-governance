@@ -79,13 +79,13 @@ contract L2ArbitrumGovernorV2Test is Test {
 
 abstract contract Cancel is L2ArbitrumGovernorV2Test {
     function testFuzz_CancelsPendingProposal(address _proposer) public {
+        vm.assume(_proposer != address(0));
         (
             address[] memory targets,
             uint256[] memory values,
             bytes[] memory calldatas,
             string memory description
         ) = _basicProposal();
-        vm.assume(_proposer != address(0));
 
         vm.prank(_proposer);
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
@@ -104,14 +104,38 @@ abstract contract Cancel is L2ArbitrumGovernorV2Test {
         );
     }
 
-    function testFuzz_RevertIf_ProposalIsActive(address _proposer) public {
+    function testFuzz_RevertIf_NotProposer(address _proposer, address _actor) public {
+        vm.assume(_proposer != address(0));
+        vm.assume(_actor != _proposer);
         (
             address[] memory targets,
             uint256[] memory values,
             bytes[] memory calldatas,
             string memory description
         ) = _basicProposal();
+
+        vm.prank(_proposer);
+        uint256 proposalId = governor.propose(targets, values, calldatas, description);
+
+        assertEq(
+            uint256(governor.state(proposalId)), uint256(IGovernorUpgradeable.ProposalState.Pending)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(L2ArbitrumGovernorV2.NotProposer.selector, _actor, _proposer)
+        );
+        vm.prank(_actor);
+        governor.cancel(targets, values, calldatas, keccak256(bytes(description)));
+    }
+
+    function testFuzz_RevertIf_ProposalIsActive(address _proposer) public {
         vm.assume(_proposer != address(0));
+        (
+            address[] memory targets,
+            uint256[] memory values,
+            bytes[] memory calldatas,
+            string memory description
+        ) = _basicProposal();
 
         vm.prank(_proposer);
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
@@ -132,13 +156,13 @@ abstract contract Cancel is L2ArbitrumGovernorV2Test {
     }
 
     function testFuzz_RevertIf_AlreadyCanceled(address _proposer) public {
+        vm.assume(_proposer != address(0));
         (
             address[] memory targets,
             uint256[] memory values,
             bytes[] memory calldatas,
             string memory description
         ) = _basicProposal();
-        vm.assume(_proposer != address(0));
 
         vm.prank(_proposer);
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
