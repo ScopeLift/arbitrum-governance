@@ -6,6 +6,9 @@ import {MultiProxyUpgradeAction} from
     "src/gov-action-contracts/gov-upgrade-contracts/upgrade-proxy/MultiProxyUpgradeAction.sol";
 import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 
+/// @title DeployMultiProxyUpgradeAction.
+/// @notice Script to deploy the `MultiProxyUpgradeAction` contract.
+/// @dev `MultiProxyUpgradeAction` contract is used to upgrade multiple governor proxies in a single transaction.
 contract DeployMultiProxyUpgradeAction is DeployConstants, Script {
     function run(address _newCoreGovernor, address _newTreasuryGovernor)
         public

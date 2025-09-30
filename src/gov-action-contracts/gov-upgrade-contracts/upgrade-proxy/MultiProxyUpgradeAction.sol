@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.16;
 
 import {TimelockControllerUpgradeable} from
@@ -50,7 +50,7 @@ contract MultiProxyUpgradeAction is ProxyUpgradeAction {
         NEW_TREASURY_GOVERNOR_IMPLEMENTATION = _newTreasuryGovernor;
     }
 
-    // @notice Proxy upgrades the Core and Treasury Governor contracts.
+    /// @notice Proxy upgrades the Core and Treasury Governor contracts.
     function perform() external {
         perform(PROXY_ADMIN, payable(CURRENT_CORE_GOVERNOR), NEW_CORE_GOVERNOR_IMPLEMENTATION);
         perform(

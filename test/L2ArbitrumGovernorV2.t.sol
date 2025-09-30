@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-
 import {L2ArbitrumGovernorV2} from "src/L2ArbitrumGovernorV2.sol";
 import {L2ArbitrumToken} from "src/L2ArbitrumToken.sol";
 import {ArbitrumTimelock} from "src/ArbitrumTimelock.sol";
@@ -10,7 +9,6 @@ import {TimelockControllerUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 import {IGovernorUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol";
-
 import {TestUtil} from "test/util/TestUtil.sol";
 
 contract L2ArbitrumGovernorV2Test is Test {
