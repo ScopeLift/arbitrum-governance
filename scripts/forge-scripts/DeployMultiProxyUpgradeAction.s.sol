@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// slither-disable-start reentrancy-benign
-
 pragma solidity 0.8.16;
 
 import {Script} from "forge-std/Script.sol";
 import {MultiProxyUpgradeAction} from
     "src/gov-action-contracts/gov-upgrade-contracts/upgrade-proxy/MultiProxyUpgradeAction.sol";
-import {SharedGovernorConstants} from "scripts/forge-scripts/SharedGovernorConstants.sol";
+import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 
-contract DeployMultiProxyUpgradeAction is SharedGovernorConstants, Script {
+contract DeployMultiProxyUpgradeAction is DeployConstants, Script {
     function run(address _newCoreGovernor, address _newTreasuryGovernor)
         public
         returns (MultiProxyUpgradeAction multiProxyUpgradeAction)

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.16;
 
-import {SharedGovernorConstants} from "scripts/forge-scripts/SharedGovernorConstants.sol";
+import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 
-contract CreateL2ArbSysProposal is SharedGovernorConstants {
+contract CreateL2ArbSysProposal is DeployConstants {
     function createL2ArbSysProposal(
         string memory _proposalDescription,
         address _oneOffUpgradeAddr,
@@ -27,7 +27,7 @@ contract CreateL2ArbSysProposal is SharedGovernorConstants {
         address _oneOffUpgradeAddr,
         uint256 _minDelay
     ) public pure returns (bytes memory proposalCalldata) {
-        address retryableTicketMagic = RETRYABLE_TICKET_MAGIC;
+        address retryableTicketMagic = L2_RETRYABLE_TICKET_MAGIC;
 
         // the data to call the upgrade executor with
         // it tells the upgrade executor how to call the upgrade contract, and what calldata to provide to it

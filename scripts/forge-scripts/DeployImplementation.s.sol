@@ -1,6 +1,4 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// slither-disable-start reentrancy-benign
-
 pragma solidity 0.8.16;
 
 import {L2ArbitrumGovernorV2} from "src/L2ArbitrumGovernorV2.sol";

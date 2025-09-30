@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// slither-disable-start reentrancy-benign
-
 pragma solidity 0.8.16;
 
 import {Script} from "forge-std/Script.sol";
-import {SharedGovernorConstants} from "scripts/forge-scripts/SharedGovernorConstants.sol";
-import "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
+import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
+import "node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {CreateL2ArbSysProposal} from "scripts/forge-scripts/CreateL2ArbSysProposal.sol";
 
-contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL2ArbSysProposal {
+contract SubmitUpgradeProposalScript is Script, DeployConstants, CreateL2ArbSysProposal {
     address PROPOSER_ADDRESS =
         vm.envOr("PROPOSER_ADDRESS", 0x1B686eE8E31c5959D9F5BBd8122a58682788eeaD); //L2Beat
 
