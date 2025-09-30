@@ -12,7 +12,7 @@ contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL
     address PROPOSER_ADDRESS =
         vm.envOr("PROPOSER_ADDRESS", 0x1B686eE8E31c5959D9F5BBd8122a58682788eeaD); //L2Beat
 
-    function run(address _timelockRolesUpgrader, uint256 _minDelay)
+    function run(address _multiProxyUpgradeAction, uint256 _minDelay)
         public
         returns (
             address[] memory targets,
@@ -22,10 +22,10 @@ contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL
             uint256 _proposalId
         )
     {
-        return proposeUpgrade(_timelockRolesUpgrader, _minDelay);
+        return proposeUpgrade(_multiProxyUpgradeAction, _minDelay);
     }
 
-    function proposeUpgrade(address _timelockRolesUpgrader, uint256 _minDelay)
+    function proposeUpgrade(address _multiProxyUpgradeAction, uint256 _minDelay)
         internal
         returns (
             address[] memory _targets,
@@ -37,7 +37,7 @@ contract SubmitUpgradeProposalScript is Script, SharedGovernorConstants, CreateL
     {
         _description = "Proposal Description here";
         (_targets, _values, _calldatas) =
-            createL2ArbSysProposal(_description, _timelockRolesUpgrader, _minDelay);
+            createL2ArbSysProposal(_description, _multiProxyUpgradeAction, _minDelay);
         vm.startBroadcast(PROPOSER_ADDRESS);
         _proposalId = GovernorUpgradeable(payable(L2_CORE_GOVERNOR)).propose(
             _targets, _values, _calldatas, _description

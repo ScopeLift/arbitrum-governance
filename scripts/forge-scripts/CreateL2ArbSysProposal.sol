@@ -34,7 +34,7 @@ contract CreateL2ArbSysProposal is SharedGovernorConstants {
         bytes memory upgradeExecutorCallData = abi.encodeWithSelector(
             IUpgradeExecutor.execute.selector,
             _oneOffUpgradeAddr,
-            abi.encodeWithSelector(ITimelockRolesUpgrader.perform.selector)
+            abi.encodeWithSelector(IMultiProxyUpgradeAction.perform.selector)
         );
 
         // the data provided to call the l1 timelock with
@@ -99,7 +99,7 @@ interface IL2ArbitrumGovernor {
     ) external returns (uint256);
 }
 
-interface ITimelockRolesUpgrader {
+interface IMultiProxyUpgradeAction {
     function perform() external;
 }
 

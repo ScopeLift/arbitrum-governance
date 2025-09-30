@@ -8,23 +8,19 @@ import {GovernorUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {SubmitUpgradeProposalScript} from "scripts/forge-scripts/SubmitUpgradeProposalScript.s.sol";
-import {BaseGovernorDeployer} from "scripts/forge-scripts/BaseGovernorDeployer.sol";
 import {DeployImplementation} from "scripts/forge-scripts/DeployImplementation.s.sol";
-import {DeployCoreGovernor} from "scripts/forge-scripts/DeployCoreGovernor.s.sol";
-import {DeployTreasuryGovernor} from "scripts/forge-scripts/DeployTreasuryGovernor.s.sol";
-import {DeployTimelockRolesUpgrader} from "scripts/forge-scripts/DeployTimelockRolesUpgrader.s.sol";
+import {DeployMultiProxyUpgradeAction} from
+    "scripts/forge-scripts/DeployMultiProxyUpgradeAction.s.sol";
 import {SharedGovernorConstants} from "scripts/forge-scripts/SharedGovernorConstants.sol";
 import {L2ArbitrumGovernorV2} from "src/L2ArbitrumGovernorV2.sol";
 import {L2ArbitrumGovernor} from "src/L2ArbitrumGovernor.sol";
-import {TimelockRolesUpgrader} from
-    "src/gov-action-contracts/gov-upgrade-contracts/update-timelock-roles/TimelockRolesUpgrader.sol";
+import {MultiProxyUpgradeAction} from
+    "src/gov-action-contracts/gov-upgrade-contracts/upgrade-proxy/MultiProxyUpgradeAction.sol";
 
 abstract contract SetupNewGovernors is SharedGovernorConstants, Test {
     // Deploy & setup scripts
     SubmitUpgradeProposalScript submitUpgradeProposalScript;
-    TimelockRolesUpgrader timelockRolesUpgrader;
-    BaseGovernorDeployer proxyCoreGovernorDeployer;
-    BaseGovernorDeployer proxyTreasuryGovernorDeployer;
+    MultiProxyUpgradeAction multiProxyUpgradeAction;
 
     // Current governors and timelocks
     L2ArbitrumGovernor currentCoreGovernor;
@@ -48,15 +44,12 @@ abstract contract SetupNewGovernors is SharedGovernorConstants, Test {
         DeployImplementation _implementationDeployer = new DeployImplementation();
         address _implementation = address(_implementationDeployer.run());
 
-        proxyCoreGovernorDeployer = new DeployCoreGovernor();
-        proxyTreasuryGovernorDeployer = new DeployTreasuryGovernor();
-
         // Deploy Governor proxy contracts
         newCoreGovernor = L2_CORE_GOVERNOR_NEW_DEPLOY == address(0)
-            ? proxyCoreGovernorDeployer.run(_implementation)
+            ? L2ArbitrumGovernorV2(payable(_implementation))
             : L2ArbitrumGovernorV2(payable(L2_CORE_GOVERNOR_NEW_DEPLOY));
         newTreasuryGovernor = L2_TREASURY_GOVERNOR_NEW_DEPLOY == address(0)
-            ? proxyTreasuryGovernorDeployer.run(_implementation)
+            ? L2ArbitrumGovernorV2(payable(_implementation))
             : L2ArbitrumGovernorV2(payable(L2_TREASURY_GOVERNOR_NEW_DEPLOY));
 
         // Current governors and timelocks
@@ -74,9 +67,11 @@ abstract contract SetupNewGovernors is SharedGovernorConstants, Test {
 
         // Prepare the script to submit upgrade proposal
         submitUpgradeProposalScript = new SubmitUpgradeProposalScript();
-        DeployTimelockRolesUpgrader deployTimelockRolesUpgrader = new DeployTimelockRolesUpgrader();
-        timelockRolesUpgrader =
-            deployTimelockRolesUpgrader.run(address(newCoreGovernor), address(newTreasuryGovernor));
+        DeployMultiProxyUpgradeAction deployMultiProxyUpgradeAction =
+            new DeployMultiProxyUpgradeAction();
+        multiProxyUpgradeAction = deployMultiProxyUpgradeAction.run(
+            address(newCoreGovernor), address(newTreasuryGovernor)
+        );
     }
 }
 
