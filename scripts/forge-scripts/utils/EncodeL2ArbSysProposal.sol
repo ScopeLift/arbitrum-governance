@@ -3,8 +3,8 @@ pragma solidity 0.8.16;
 
 import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 
-contract CreateL2ArbSysProposal is DeployConstants {
-    function createL2ArbSysProposal(
+contract EncodeL2ArbSysProposal is DeployConstants {
+    function encodeL2ArbSysProposal(
         string memory _proposalDescription,
         address _oneOffUpgradeAddr,
         uint256 _minDelay
@@ -19,10 +19,10 @@ contract CreateL2ArbSysProposal is DeployConstants {
 
         targets[0] = L2_ARB_SYS;
         calldatas[0] =
-            createArbSysProposalCalldata(_proposalDescription, _oneOffUpgradeAddr, _minDelay);
+            encodeArbSysProposalCalldata(_proposalDescription, _oneOffUpgradeAddr, _minDelay);
     }
 
-    function createArbSysProposalCalldata(
+    function encodeArbSysProposalCalldata(
         string memory _proposalDescription,
         address _oneOffUpgradeAddr,
         uint256 _minDelay
@@ -84,10 +84,7 @@ interface IL1Timelock {
 }
 
 interface IArbSys {
-    function sendTxToL1(address destination, bytes calldata data)
-        external
-        payable
-        returns (uint256);
+    function sendTxToL1(address destination, bytes calldata data) external payable returns (uint256);
 }
 
 interface IL2ArbitrumGovernor {

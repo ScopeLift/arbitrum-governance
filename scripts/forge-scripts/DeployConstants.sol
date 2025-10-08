@@ -15,8 +15,6 @@ contract DeployConstants {
     address public constant L2_PROXY_ADMIN_CONTRACT = 0xdb216562328215E010F819B5aBe947bad4ca961e;
 
     address public constant L2_ARB_SYS = 0x0000000000000000000000000000000000000064;
-    address public constant L2_ARB_TREASURY_FIXED_DELEGATE =
-        0xF3FC178157fb3c87548bAA86F9d24BA38E649B58;
     address public constant L2_ARB_RETRYABLE_TX = 0x000000000000000000000000000000000000006E;
     address public constant L2_SECURITY_COUNCIL_9 = 0x423552c0F05baCCac5Bfa91C6dCF1dc53a0A1641;
 
@@ -27,29 +25,10 @@ contract DeployConstants {
     // ===========================================================================================
     // TODO: Update these values after the deployment process
     // ===========================================================================================
-    address public constant L2_CORE_GOVERNOR_NEW_DEPLOY = address(0); // TODO: Update after the core governor is deployed.
-    address public constant L2_TREASURY_GOVERNOR_NEW_DEPLOY = address(0); // TODO: Update after the treasury governor is deployed.
+    address public constant L2_ARBITRUM_GOVERNOR_V2_IMPLEMENTATION = address(0); // TODO: Update after the core governor is deployed.
     bool public constant UPGRADE_PROPOSAL_PASSED_ONCHAIN = false; // TODO: Update after the upgrade proposal is passed.
     // ===========================================================================================
 
     address public constant L2_UPGRADE_EXECUTOR = 0xCF57572261c7c2BCF21ffD220ea7d1a27D40A827;
-
     address public constant L2_RETRYABLE_TICKET_MAGIC = 0xa723C008e76E379c55599D2E4d93879BeaFDa79C;
-
-    address public constant EXCLUDE_ADDRESS = address(0xA4b86);
-    uint256 public constant QUORUM_DENOMINATOR = 10_000;
-
-    bytes32 public constant TIMELOCK_PROPOSER_ROLE =
-        0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1;
-
-    uint8 public constant VOTE_TYPE_FRACTIONAL = 255;
-
-    // These values match the current production values for both governors. Note that they are expressed in L1 blocks,
-    // with an assumed 12 second block time, because on Arbitrum, block.number returns the number of the L1.
-    uint48 public constant INITIAL_VOTING_DELAY = 21_600; // 3 days
-    uint32 public constant INITIAL_VOTING_PERIOD = 100_800; // 14 days
-    uint64 public constant INITIAL_VOTE_EXTENSION = 14_400; // 2 days
-
-    // This value matches the current production value for both governors. 1M Arb in raw decimals.
-    uint256 public constant INITIAL_PROPOSAL_THRESHOLD = 1_000_000_000_000_000_000_000_000;
 }

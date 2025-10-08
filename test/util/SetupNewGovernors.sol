@@ -67,9 +67,9 @@ abstract contract SetupNewGovernors is DeployConstants, Test {
         address _implementation = address(_implementationDeployer.run());
 
         // Deploy Governor proxy contracts
-        newGovernorImplementation = L2_CORE_GOVERNOR_NEW_DEPLOY == address(0)
+        newGovernorImplementation = L2_ARBITRUM_GOVERNOR_V2_IMPLEMENTATION == address(0)
             ? L2ArbitrumGovernorV2(payable(_implementation))
-            : L2ArbitrumGovernorV2(payable(L2_CORE_GOVERNOR_NEW_DEPLOY));
+            : L2ArbitrumGovernorV2(payable(L2_ARBITRUM_GOVERNOR_V2_IMPLEMENTATION));
 
         // Current governors and timelocks
         currentCoreGovernor = L2ArbitrumGovernor(payable(L2_CORE_GOVERNOR));

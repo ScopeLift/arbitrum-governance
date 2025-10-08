@@ -4,11 +4,13 @@ pragma solidity 0.8.16;
 import {Script} from "forge-std/Script.sol";
 import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 import "node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
-import {CreateL2ArbSysProposal} from "scripts/forge-scripts/CreateL2ArbSysProposal.sol";
+import {EncodeL2ArbSysProposal} from "scripts/forge-scripts/utils/EncodeL2ArbSysProposal.sol";
 
-contract SubmitUpgradeProposalScript is Script, DeployConstants, CreateL2ArbSysProposal {
+contract SubmitUpgradeProposalScript is Script, DeployConstants, EncodeL2ArbSysProposal {
     address PROPOSER_ADDRESS =
-        vm.envOr("PROPOSER_ADDRESS", 0x1B686eE8E31c5959D9F5BBd8122a58682788eeaD); //L2Beat
+        vm.envOr("PROPOSER_ADDRESS", 0x1B686eE8E31c5959D9F5BBd8122a58682788eeaD); //TODO: Update proposer address.
+    string PROPOSAL_DESCRIPTION =
+        vm.envOr("PROPOSAL_DESCRIPTION", string("Add proposal description here")); // TODO: Update proposal description.
 
     function run(address _multiProxyUpgradeAction, uint256 _minDelay)
         public
@@ -33,13 +35,12 @@ contract SubmitUpgradeProposalScript is Script, DeployConstants, CreateL2ArbSysP
             uint256 _proposalId
         )
     {
-        _description = "Proposal Description here";
+        _description = PROPOSAL_DESCRIPTION;
         (_targets, _values, _calldatas) =
-            createL2ArbSysProposal(_description, _multiProxyUpgradeAction, _minDelay);
+            encodeL2ArbSysProposal(_description, _multiProxyUpgradeAction, _minDelay);
         vm.startBroadcast(PROPOSER_ADDRESS);
-        _proposalId = GovernorUpgradeable(payable(L2_CORE_GOVERNOR)).propose(
-            _targets, _values, _calldatas, _description
-        );
+        _proposalId = GovernorUpgradeable(payable(L2_CORE_GOVERNOR))
+            .propose(_targets, _values, _calldatas, _description);
         vm.stopBroadcast();
     }
 }

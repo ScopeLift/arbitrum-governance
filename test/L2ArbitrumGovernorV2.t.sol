@@ -5,10 +5,12 @@ import "forge-std/Test.sol";
 import {L2ArbitrumGovernorV2} from "src/L2ArbitrumGovernorV2.sol";
 import {L2ArbitrumToken} from "src/L2ArbitrumToken.sol";
 import {ArbitrumTimelock} from "src/ArbitrumTimelock.sol";
-import {TimelockControllerUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {IGovernorUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol";
+import {
+    TimelockControllerUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
+import {
+    IGovernorUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol";
 import {TestUtil} from "test/util/TestUtil.sol";
 
 contract L2ArbitrumGovernorV2Test is Test {
@@ -29,12 +31,15 @@ contract L2ArbitrumGovernorV2Test is Test {
     uint256 internal constant PROPOSAL_THRESHOLD = 0; // allow proposals without voting power
     uint64 internal constant VOTE_EXTENSION = 0;
 
+    address internal constant PROXY_ADMIN = 0xc7183455a4C133Ae270771860664b6B7ec320bB1;
+
     function setUp() public virtual {
         // Deploy token proxy and initialize
         token = L2ArbitrumToken(TestUtil.deployProxy(address(new L2ArbitrumToken())));
         token.initialize(L1_TOKEN_ADDRESS, INITIAL_SUPPLY, TOKEN_OWNER);
-        governor =
-            L2ArbitrumGovernorV2(payable(TestUtil.deployProxy(address(new L2ArbitrumGovernorV2()))));
+        governor = L2ArbitrumGovernorV2(
+            payable(TestUtil.deployProxy(address(new L2ArbitrumGovernorV2())))
+        );
         timelock = ArbitrumTimelock(payable(TestUtil.deployProxy(address(new ArbitrumTimelock()))));
         address[] memory proposers = new address[](1);
         address[] memory executors = new address[](1);
@@ -104,7 +109,7 @@ abstract contract Cancel is L2ArbitrumGovernorV2Test {
 
     function testFuzz_RevertIf_NotProposer(address _proposer, address _actor) public {
         vm.assume(_proposer != address(0));
-        vm.assume(_actor != _proposer);
+        vm.assume(_actor != _proposer && _actor != PROXY_ADMIN);
         (
             address[] memory targets,
             uint256[] memory values,

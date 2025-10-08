@@ -21,12 +21,7 @@ contract L2ArbitrumGovernorV2 is L2ArbitrumGovernor {
     /// @dev Used in cancel() to ensure only the proposer can cancel the proposal.
     mapping(uint256 => address) internal proposers;
 
-    /// @notice Creates a new proposal and records the proposer.
-    /// @param targets A list of target addresses for calls to be made in the proposal.
-    /// @param values A list of values (ETH) to be passed to the calls in the proposal.
-    /// @param calldatas A list of calldata for the calls in the proposal.
-    /// @param description The description for the proposal.
-    /// @return The id of the proposal.
+    /// @inheritdoc IGovernorUpgradeable
     function propose(
         address[] memory targets,
         uint256[] memory values,
