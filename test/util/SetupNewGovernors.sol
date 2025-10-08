@@ -2,20 +2,24 @@
 pragma solidity 0.8.16;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {TimelockControllerUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {GovernorUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
+import {
+    TimelockControllerUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
+import {
+    GovernorUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 import {SubmitUpgradeProposalScript} from "scripts/forge-scripts/SubmitUpgradeProposalScript.s.sol";
 import {DeployImplementation} from "scripts/forge-scripts/DeployImplementation.s.sol";
-import {DeployMultiProxyUpgradeAction} from
-    "scripts/forge-scripts/DeployMultiProxyUpgradeAction.s.sol";
+import {
+    DeployMultiProxyUpgradeAction
+} from "scripts/forge-scripts/DeployMultiProxyUpgradeAction.s.sol";
 import {DeployConstants} from "scripts/forge-scripts/DeployConstants.sol";
 import {L2ArbitrumGovernorV2} from "src/L2ArbitrumGovernorV2.sol";
 import {L2ArbitrumGovernor} from "src/L2ArbitrumGovernor.sol";
-import {MultiProxyUpgradeAction} from
-    "src/gov-action-contracts/gov-upgrade-contracts/upgrade-proxy/MultiProxyUpgradeAction.sol";
+import {
+    MultiProxyUpgradeAction
+} from "src/gov-action-contracts/gov-upgrade-contracts/upgrade-proxy/MultiProxyUpgradeAction.sol";
 
 abstract contract SetupNewGovernors is DeployConstants, Test {
     // Deploy & setup scripts
@@ -29,8 +33,7 @@ abstract contract SetupNewGovernors is DeployConstants, Test {
     TimelockControllerUpgradeable currentTreasuryTimelock;
 
     // New governors
-    L2ArbitrumGovernorV2 newCoreGovernor;
-    L2ArbitrumGovernorV2 newTreasuryGovernor;
+    L2ArbitrumGovernorV2 newGovernorImplementation;
 
     uint256 constant FORK_BLOCK = 245_608_716; // Arbitrary recent block
     address[] public _majorDelegates;
@@ -64,12 +67,9 @@ abstract contract SetupNewGovernors is DeployConstants, Test {
         address _implementation = address(_implementationDeployer.run());
 
         // Deploy Governor proxy contracts
-        newCoreGovernor = L2_CORE_GOVERNOR_NEW_DEPLOY == address(0)
+        newGovernorImplementation = L2_CORE_GOVERNOR_NEW_DEPLOY == address(0)
             ? L2ArbitrumGovernorV2(payable(_implementation))
             : L2ArbitrumGovernorV2(payable(L2_CORE_GOVERNOR_NEW_DEPLOY));
-        newTreasuryGovernor = L2_TREASURY_GOVERNOR_NEW_DEPLOY == address(0)
-            ? L2ArbitrumGovernorV2(payable(_implementation))
-            : L2ArbitrumGovernorV2(payable(L2_TREASURY_GOVERNOR_NEW_DEPLOY));
 
         // Current governors and timelocks
         currentCoreGovernor = L2ArbitrumGovernor(payable(L2_CORE_GOVERNOR));
@@ -88,9 +88,8 @@ abstract contract SetupNewGovernors is DeployConstants, Test {
         submitUpgradeProposalScript = new SubmitUpgradeProposalScript();
         DeployMultiProxyUpgradeAction deployMultiProxyUpgradeAction =
             new DeployMultiProxyUpgradeAction();
-        multiProxyUpgradeAction = deployMultiProxyUpgradeAction.run(
-            address(newCoreGovernor), address(newTreasuryGovernor)
-        );
+        multiProxyUpgradeAction =
+            deployMultiProxyUpgradeAction.run(address(newGovernorImplementation));
 
         // Set the major delegates for testing
         _majorDelegates = new address[](18);
@@ -124,13 +123,10 @@ contract MockArbSys is DeployConstants, Test {
     function sendTxToL1(address _l1Target, bytes calldata _data) external {
         (
             address _retryableTicketMagic,
-            /*uint256 _ignored*/
-            ,
+            /*uint256 _ignored*/,
             bytes memory _retryableData,
-            /*bytes32 _predecessor*/
-            ,
-            /*bytes32 _description*/
-            ,
+            /*bytes32 _predecessor*/,
+            /*bytes32 _description*/,
             /*uint256 _minDelay*/
         ) = abi.decode(_data[4:], (address, uint256, bytes, bytes32, bytes32, uint256));
 
@@ -140,12 +136,9 @@ contract MockArbSys is DeployConstants, Test {
         (
             address _arbOneDelayedInbox,
             address _upgradeExecutor,
-            /*uint256 _value*/
-            ,
-            /*uint256 _maxGas*/
-            ,
-            /*uint256 _maxFeePerGas*/
-            ,
+            /*uint256 _value*/,
+            /*uint256 _maxGas*/,
+            /*uint256 _maxFeePerGas*/,
             bytes memory _upgradeExecutorCallData
         ) = abi.decode(_retryableData, (address, address, uint256, uint256, uint256, bytes));
 
@@ -153,7 +146,7 @@ contract MockArbSys is DeployConstants, Test {
         assertEq(_upgradeExecutor, L2_UPGRADE_EXECUTOR);
 
         vm.prank(L2_SECURITY_COUNCIL_9);
-        (bool success, /*bytes memory data*/ ) = _upgradeExecutor.call(_upgradeExecutorCallData);
+        (bool success,/*bytes memory data*/) = _upgradeExecutor.call(_upgradeExecutorCallData);
         assertEq(success, true);
     }
 }
