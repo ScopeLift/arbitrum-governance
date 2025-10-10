@@ -34,7 +34,7 @@ contract L2ArbitrumGovernorV2 is L2ArbitrumGovernor {
     }
 
     /// @notice Allows a proposer to cancel a proposal when it is pending.
-    /// @param targets The proposal-to-be-cancelled's targets.
+    /// @param targets The proposal's targets.
     /// @param values The proposal's values.
     /// @param calldatas The proposal's calldatas.
     /// @param descriptionHash The hash of the proposal's description.
