@@ -251,7 +251,7 @@ abstract contract Cancel is L2ArbitrumGovernorV2Test {
 
     function testFuzz_RevertIf_NotProposer(uint256 _randomSeed, address _actor) public {
         address _proposer = _getRandomProposer(_randomSeed);
-        vm.assume(_actor != _proposer);
+        vm.assume(_actor != L2_PROXY_ADMIN_CONTRACT && _actor != _proposer);
         (
             address[] memory targets,
             uint256[] memory values,
@@ -378,6 +378,7 @@ abstract contract Propose is L2ArbitrumGovernorV2Test {
     }
 
     function testFuzz_ProposerBelowThresholdCannotPropose(address _proposer) public {
+        vm.assume(_proposer != L2_PROXY_ADMIN_CONTRACT);
         vm.assume(governor.getVotes(_proposer, block.number - 1) < governor.proposalThreshold());
         (
             address[] memory targets,
@@ -491,6 +492,7 @@ abstract contract Execute is L2ArbitrumGovernorV2Test {
     }
 
     function testFuzz_RevertIf_OperationNotReady(uint256 _randomSeed, address _actor) public {
+        vm.assume(_actor != L2_PROXY_ADMIN_CONTRACT);
         (
             address[] memory targets,
             uint256[] memory values,
